@@ -25,6 +25,5 @@ class PostService
             $message = $exception->getMessage();
             throw new BadRequestHttpException($message);
         }
-
     }
 }
