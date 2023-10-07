@@ -19,12 +19,12 @@ use App\Http\Controllers\Api\Auth\AuthenticationController;
 Route::post('register', [AuthenticationController::class, 'register']);
 Route::post('login', [AuthenticationController::class, 'login']);
 
-// Route::get('check', [AuthenticationController::class, 'check']);
 Route::apiResource('posts', PostController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('logout', [AuthenticationController::class, 'logout']);
 
+    // Auth
+    Route::post('logout', [AuthenticationController::class, 'logout']);
     Route::get('check', [AuthenticationController::class, 'check']);
 
 });
