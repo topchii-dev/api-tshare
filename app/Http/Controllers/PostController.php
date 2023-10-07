@@ -23,7 +23,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return 1;
+        echo 1;
+        return response('s');
     }
 
     /**

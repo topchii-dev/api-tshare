@@ -53,4 +53,21 @@ class AuthenticationService
             throw new BadRequestHttpException($message);
         }
     }
+
+    public function logout()
+    {
+        try {
+            $user = User::find(Auth::id());
+
+            if ($user) {
+                $user->tokens()->delete();
+            }
+
+            return $user->tokens()->delete();
+
+        } catch (Throwable $exception) {
+            $message = $exception->getMessage();
+            throw new BadRequestHttpException($message);
+        }
+    }
 }

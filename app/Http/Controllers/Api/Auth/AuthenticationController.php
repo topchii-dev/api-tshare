@@ -32,6 +32,11 @@ class AuthenticationController
         return $user;
     }
 
+    public function logout()
+    {
+        return $this->authenticationService->logout();
+    }
+
     public function check(Request $request)
     {
         $user = Auth::user();
