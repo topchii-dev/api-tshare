@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\SimpleResource;
+use App\Http\Resources\UserResource;
 use App\Services\Auth\AuthenticationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class AuthenticationController
 {
@@ -16,11 +21,23 @@ class AuthenticationController
 
     public function register(RegisterRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
+            $user = $this->authenticationService->registerUser($data);
 
-        $user = $this->authenticationService->registerUser($data);
+            return response([$user])
+                ->setStatusCode(Response::HTTP_CREATED);
 
-        return $user;
+        } catch (Throwable $exc) {
+            $exception_response = [
+                'success' => false, 
+                'error' => $exc->getMessage()
+            ];
+
+            return (new SimpleResource($exception_response))
+                ->response()
+                ->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
     public function login(LoginRequest $request)
@@ -29,23 +46,28 @@ class AuthenticationController
 
         $user = $this->authenticationService->login($data);
 
-        return $user;
+        return response(
+                $user? $user : new SimpleResource(['message' => 'Invalid credentials'])
+            )
+            ->setStatusCode(
+                $user? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED
+            );
     }
 
     public function logout()
     {
-        return $this->authenticationService->logout();
+        $output = $this->authenticationService->logout();
+        return (new SimpleResource($output))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     public function check(Request $request)
     {
-        $user = Auth::user();
-
-        if ($user) {
-            return $user;
-        } else {
-            return 'Failed';
-        }
+        $output = $this->authenticationService->check();
+        return (new SimpleResource($output))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
 }
