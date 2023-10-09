@@ -29,4 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // API Resources
     Route::apiResource('users', UserController::class);
     Route::apiResource('posts', PostController::class);
+
+    // Posts
+    Route::get('my/posts', [UserController::class, 'getMyPosts']);
 });

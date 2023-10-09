@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Models\User;
+use App\Repositories\PostRepository;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Throwable;
 
@@ -13,7 +15,10 @@ class UserService
 {
     const PER_PAGE = 10;
 
-    public function __construct(private readonly UserRepository $userRepository)
+    public function __construct(
+            private readonly UserRepository $userRepository,
+            private readonly PostRepository $postRepository
+        )
     {
     }
 
@@ -38,5 +43,17 @@ class UserService
             $message = $exception->getMessage();
             throw new BadRequestHttpException($message);
         }
+    }
+
+    public function getUserPosts(User $user)
+    {
+        $posts = $this->postRepository->getList([
+            function ($query, $next) {
+                $query->where('author_id', Auth::id());
+                return $next($query);
+            }
+        ]);
+
+        return $posts;
     }
 }

@@ -47,7 +47,7 @@ class AuthenticationController
         $user = $this->authenticationService->login($data);
 
         return response(
-                $user? $user : new SimpleResource(['message' => 'Invalid credentials'])
+                $user? $user : (new SimpleResource(['message' => 'Invalid credentials']))
             )
             ->setStatusCode(
                 $user? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED

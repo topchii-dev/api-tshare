@@ -11,6 +11,8 @@ use Throwable;
 
 class PostService
 {
+    const PER_PAGE = 10;
+    
     public function __construct(private readonly PostRepository $postRepository)
     {
     }
