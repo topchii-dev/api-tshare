@@ -25,7 +25,7 @@ class AuthenticationController
             $data = $request->validated();
             $user = $this->authenticationService->registerUser($data);
 
-            return response([$user])
+            return response($user)
                 ->setStatusCode(Response::HTTP_CREATED);
 
         } catch (Throwable $exc) {
@@ -57,8 +57,7 @@ class AuthenticationController
     public function logout()
     {
         $output = $this->authenticationService->logout();
-        return (new SimpleResource($output))
-            ->response()
+        return response($output)
             ->setStatusCode(Response::HTTP_OK);
     }
 

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UpdateRequest;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\SimpleResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -32,8 +35,24 @@ class UserController extends Controller
             ->setStatusCode(Response::HTTP_OK);
     }
 
-    public function update()
+    public function update(User $user, UpdateRequest $request)
     {
+        try {
+            $user = $this->userService->updateUser($user, $request->validated());
+
+            return (new UserResource($user))
+                ->response()
+                ->setStatusCode(Response::HTTP_CREATED);
+        } catch (Throwable $exc) {
+            $exception_response = [
+                'success' => false,
+                'error' => $exc->getMessage()
+            ];
+
+            return (new SimpleResource($exception_response))
+                ->response()
+                ->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
         
     }
 
